@@ -67,6 +67,13 @@ void RenderVk::Cleanup() {
 }
 
 void RenderVk::SetupDebugMessenger() {
+  /// <Configuration>
+  /*There are a lot more settings for the behavior of validation layers than just the flags
+  specified in the VkDebugUtilsMessengerCreateInfoEXT struct.
+  Browse to the Vulkan SDK and go to the Config directory. 
+  There you will find a vk_layer_settings.txt file that explains 
+  how to configure the layers.*/
+  /// </Configuration>
   if (!enableValidationLayers) return;
   VkDebugUtilsMessengerCreateInfoEXT createInfo{};
   PopulateDebugMessengerCreateInfo(createInfo);
@@ -75,6 +82,8 @@ void RenderVk::SetupDebugMessenger() {
     throw std::runtime_error("failed to set up debug messenger!");
     assert(true);
   }
+  
+
 }
 
 bool RenderVk::CheckValidationLayerSupport() {
