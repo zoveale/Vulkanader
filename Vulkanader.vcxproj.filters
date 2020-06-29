@@ -19,6 +19,9 @@
     <Filter Include="Header Files\SystemInfo">
       <UniqueIdentifier>{035938d6-e210-4763-b7d4-c49a2d3ab1bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{5863d06e-3745-41cb-9be3-8e2a98d35a15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -32,14 +35,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="singletons.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderApi.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="system.h">
       <Filter>Header Files\SystemInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="singletons.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
