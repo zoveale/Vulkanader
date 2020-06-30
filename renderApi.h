@@ -13,6 +13,9 @@
 #include <cassert>
 #include <stdio.h>
 
+//c++ 17
+#include <optional>
+//
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -23,6 +26,7 @@ class RenderVk {
 public:
   void InitVk();
   void CreateInstance();
+
   void Cleanup();
   
 
@@ -34,10 +38,27 @@ private:
   const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
   };
+  /// <PhysicalDeviceLogicFunctions>
+  void PickPhysicalDevice();
+  bool IsDeviceSuitable(VkPhysicalDevice device);
+  /// <QueueFamilies>
+  struct QueueFamilyIndices {
+    std::optional<uint32_t> graphicsFamily;
+    bool IsComplete();
+  };
+  QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+  /// </QueueFamilies>
+  /// </PhysicalDeviceLogicFunctions>
+  
+ 
+  
+  /// <HelperFunctions>
+  void PrintExtensions();
+  /// </HelperFunctions>
 
+  /// <DebugLogic>
   void SetupDebugMessenger();
   bool CheckValidationLayerSupport();
-  void PrintExtensions();
   std::vector<const char*> GetRequiredExtensions();
   static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -48,12 +69,11 @@ private:
     const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
     const VkAllocationCallbacks* pAllocator,
     VkDebugUtilsMessengerEXT* pDebugMessenger);
-
   void DestroyDebugUtilsMessengerEXT(VkInstance instance,
     VkDebugUtilsMessengerEXT debugMessenger,
     const VkAllocationCallbacks* pAllocator);
-
   void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+  /// </DebugLogic>
 #ifdef NDEBUG
   const bool enableValidationLayers = false;
 #else

@@ -6,6 +6,7 @@
 void RenderVk::InitVk() {
   CreateInstance();
   SetupDebugMessenger();
+  PickPhysicalDevice();
 }
 
 void RenderVk::CreateInstance() {
@@ -13,7 +14,8 @@ void RenderVk::CreateInstance() {
   bool vkCheck = CheckValidationLayerSupport();
   assert((enableValidationLayers && !vkCheck) == false);
 
-  PrintExtensions();
+  //PrintExtensions();
+
   /// <VkApplicationInfo>
   VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -59,12 +61,83 @@ void RenderVk::CreateInstance() {
 
 void RenderVk::Cleanup() {
   if (enableValidationLayers) {
-    //DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+    DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
   }
 
   vkDestroyInstance(instance, nullptr);
 
 }
+
+void RenderVk::PickPhysicalDevice() {
+  /// <VkPhysicalDevice>
+  VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+  uint32_t deviceCount{ 0 };
+  vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+
+  if(deviceCount == 0) 
+    throw std::runtime_error("failed to find GPUs with Vulkan support!");
+
+  std::vector<VkPhysicalDevice> devices{ deviceCount };
+  vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+  for (const auto& device : devices) {
+    if (IsDeviceSuitable(device)) {
+      physicalDevice = device;
+      break;
+    }
+  }
+  if (physicalDevice == VK_NULL_HANDLE) {
+    throw std::runtime_error("failed to find a suitable GPU!");
+  }
+
+  /// </VkPhysicalDevice>
+
+}
+
+struct RenderVk::QueueFamilyIndices;
+bool RenderVk::IsDeviceSuitable(VkPhysicalDevice device) {
+  //can add more functionality, like picking the device with the
+    //"highest" score
+  /*
+  TODO:: add back in later
+  VkPhysicalDeviceProperties deviceProperties;
+  VkPhysicalDeviceFeatures deviceFeatures;
+  vkGetPhysicalDeviceProperties(device, &deviceProperties);
+  vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+  
+  return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+         deviceFeatures.geometryShader;*/
+
+  QueueFamilyIndices indices = FindQueueFamilies(device);
+
+  return indices.graphicsFamily.has_value();
+  return true;
+}
+
+RenderVk::QueueFamilyIndices RenderVk::FindQueueFamilies(VkPhysicalDevice device) {
+  QueueFamilyIndices indices;
+
+  uint32_t queueFamilyCount = 0;
+  vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+  std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+  vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+  int i = 0;
+  for (const auto& queueFamily : queueFamilies) {
+    if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+      indices.graphicsFamily = i;
+    }
+    if (indices.IsComplete()) {
+        break;
+    }
+    i++;
+  }
+  return indices;
+}
+
+
+
+
 
 void RenderVk::SetupDebugMessenger() {
   /// <Configuration>
@@ -177,3 +250,6 @@ void RenderVk::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoE
 
 
 
+bool RenderVk::QueueFamilyIndices::IsComplete() {
+  return graphicsFamily.has_value();
+}
