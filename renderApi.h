@@ -15,6 +15,7 @@
 
 //c++ 17
 #include <optional>
+#include <set>
 //
 #include <stdexcept>
 #include <string>
@@ -25,41 +26,27 @@
 class RenderVk {
 public:
   void InitVk();
-  void CreateInstance();
+
   void Cleanup();
   
 
-
+  GLFWwindow* window;
 private:
+
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
+  VkSurfaceKHR surface;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
   VkDevice device;
   VkQueue graphicsQueue;
+  VkQueue presentQueue;
+ 
 
-  const std::vector<const char*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-  };
-  /// <PhysicalDeviceLogicFunctions>
-  void PickPhysicalDevice();
-  bool IsDeviceSuitable(VkPhysicalDevice device);
-  /// <QueueFamilies>
-  struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    bool IsComplete();
-  };
-  QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-  /// </QueueFamilies>
-  /// </PhysicalDeviceLogicFunctions>
-  
-  
-  /// <LogicalDevice>
-  void CreateLogicalDevice();
-  /// </LogicalDevice>
+  void InitWindow();
 
-  /// <HelperFunctions>
-  void PrintExtensions();
-  /// </HelperFunctions>
+  /// <CreateInstance>
+  void CreateInstance();
+  /// </CreateInstance>
 
   /// <DebugLogic>
   void SetupDebugMessenger();
@@ -79,11 +66,42 @@ private:
     const VkAllocationCallbacks* pAllocator);
   void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
   /// </DebugLogic>
+
+  /// <CreateSurface>
+  void CreateSurface();
+  /// </CreateSurface>
+
+  /// <PhysicalDeviceLogicFunctions>
+  void PickPhysicalDevice();
+  bool IsDeviceSuitable(VkPhysicalDevice device);
+    /// <QueueFamilies>
+  struct QueueFamilyIndices {
+    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
+    bool IsComplete();
+  };
+  QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+    /// </QueueFamilies>
+  /// </PhysicalDeviceLogicFunctions>
+  
+  
+  /// <LogicalDevice>
+  void CreateLogicalDevice();
+  /// </LogicalDevice>
+
+  /// <HelperFunctions>
+  void PrintExtensions();
+  /// </HelperFunctions>
+
+  
 #ifdef NDEBUG
   const bool enableValidationLayers = false;
 #else
   const bool enableValidationLayers = true;
 #endif
+  const std::vector<const char*> validationLayers = {
+   "VK_LAYER_KHRONOS_validation"
+  };
 };
 
 #endif // !RENDERAPI_H

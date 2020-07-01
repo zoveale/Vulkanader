@@ -9,7 +9,6 @@ public:
   void MainLoop();
   void Cleanup();
 private:
-  GLFWwindow* window;
   RenderVk renderVk;
 };
 
